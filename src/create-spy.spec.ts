@@ -34,21 +34,57 @@ describe('createSpy', () => {
 
     // Check if history.put is called with the correct arguments
     expect(spyHistoryMock.put).toHaveBeenCalledTimes(6);
-    expect(spyHistoryMock.put.mock.calls).toEqual([
-      ['prop1', { type: 'get', key: 'prop1' }],
-      ['prop2', { type: 'get', key: 'prop2' }],
-      ['prop2.nestedProp1', { type: 'get', key: 'nestedProp1' }],
-      ['prop1', { type: 'set', key: 'prop1', value: 100 }],
-      ['method', { type: 'get', key: 'method' }],
+    expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
       [
-        'method',
-        {
-          args: [2, 3],
-          key: 'method',
-          type: 'call',
-        },
-      ],
-    ]);
+        [
+          "prop1",
+          {
+            "key": "prop1",
+            "type": "get",
+          },
+        ],
+        [
+          "prop2",
+          {
+            "key": "prop2",
+            "type": "get",
+          },
+        ],
+        [
+          "prop2.nestedProp1",
+          {
+            "key": "nestedProp1",
+            "type": "get",
+          },
+        ],
+        [
+          "prop1",
+          {
+            "key": "prop1",
+            "type": "set",
+            "value": 100,
+          },
+        ],
+        [
+          "method",
+          {
+            "key": "method",
+            "type": "get",
+          },
+        ],
+        [
+          "method",
+          {
+            "args": [
+              2,
+              3,
+            ],
+            "key": "method",
+            "type": "call",
+          },
+        ],
+      ]
+    `);
   });
 
   it('should reuse proxy for the same target', () => {
@@ -78,14 +114,54 @@ describe('createSpy', () => {
     spyObject.b.x;
 
     // Ensure that proxy is reused for the same target
-    expect(spyHistoryMock.put.mock.calls).toEqual([
-      ['a', { key: 'a', type: 'get' }],
-      ['a.x', { key: 'x', type: 'set', value: 1 }],
-      ['a', { key: 'a', type: 'get' }],
-      ['a.x', { key: 'x', type: 'set', value: 2 }],
-      ['b', { key: 'b', type: 'get' }],
-      ['b.x', { key: 'x', type: 'get' }],
-    ]);
+    expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          "a",
+          {
+            "key": "a",
+            "type": "get",
+          },
+        ],
+        [
+          "a.x",
+          {
+            "key": "x",
+            "type": "set",
+            "value": 1,
+          },
+        ],
+        [
+          "a",
+          {
+            "key": "a",
+            "type": "get",
+          },
+        ],
+        [
+          "a.x",
+          {
+            "key": "x",
+            "type": "set",
+            "value": 2,
+          },
+        ],
+        [
+          "b",
+          {
+            "key": "b",
+            "type": "get",
+          },
+        ],
+        [
+          "b.x",
+          {
+            "key": "x",
+            "type": "get",
+          },
+        ],
+      ]
+    `);
   });
 
   it('throws an error on calling with non-object', () => {
@@ -128,9 +204,17 @@ describe('createSpy', () => {
         throwingObject.property;
       }).toThrow();
 
-      expect(spyHistoryMock.put.mock.calls).toEqual([
-        ['property', { key: 'property', type: 'get' }],
-      ]);
+      expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "property",
+            {
+              "key": "property",
+              "type": "get",
+            },
+          ],
+        ]
+      `);
     });
 
     it('should log property set to history', () => {
@@ -138,9 +222,18 @@ describe('createSpy', () => {
         throwingObject.property = 42;
       }).toThrow();
 
-      expect(spyHistoryMock.put.mock.calls).toEqual([
-        ['property', { key: 'property', type: 'set', value: 42 }],
-      ]);
+      expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            "property",
+            {
+              "key": "property",
+              "type": "set",
+              "value": 42,
+            },
+          ],
+        ]
+      `);
     });
 
     it('should log method call to history', () => {
@@ -158,17 +251,29 @@ describe('createSpy', () => {
         throwingObject.method({ x: 1 });
       }).toThrow();
 
-      expect(spyHistoryMock.put.mock.calls).toEqual([
-        ['method', { key: 'method', type: 'get' }],
+      expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
         [
-          'method',
-          {
-            args: [{ x: 1 }],
-            key: 'method',
-            type: 'call',
-          },
-        ],
-      ]);
+          [
+            "method",
+            {
+              "key": "method",
+              "type": "get",
+            },
+          ],
+          [
+            "method",
+            {
+              "args": [
+                {
+                  "x": 1,
+                },
+              ],
+              "key": "method",
+              "type": "call",
+            },
+          ],
+        ]
+      `);
     });
   });
 });

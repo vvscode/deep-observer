@@ -7,7 +7,7 @@ const isFunction = (value: unknown) => typeof value === 'function';
 const shouldProxy = (value: unknown): value is object | Function =>
   isObject(value) || isFunction(value);
 
-export function createSpy<T>(obj: T, history: History): T & { history: History } {
+export function createSpy<T>(obj: T, history: History): T {
   const proxyCache = new Map<string, unknown>();
 
   function createProxy(target: unknown, path: string[] = []): unknown {
@@ -54,5 +54,5 @@ export function createSpy<T>(obj: T, history: History): T & { history: History }
     return proxy;
   }
 
-  return createProxy(obj) as T & { history: History };
+  return createProxy(obj) as T;
 }

@@ -1,3 +1,3 @@
-// TODO: add features
-
-export const add = (a: number, b: number) => a + b;
+export { BasicHistory } from './basic-history';
+export { createSpy } from './create-spy';
+export type * from './types';

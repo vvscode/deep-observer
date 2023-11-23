@@ -14,38 +14,32 @@ it('should create a spy and record history', () => {
   expect(spiedObj.method1(1)).toEqual('result1');
   expect(spiedObj.method2({ b: [] })).toEqual('result2');
 
-  expect(history.getAll()).toMatchInlineSnapshot(
-    `
-    {
-      "method1": [
-        {
-          "key": "method1",
-          "type": "get",
-        },
-        {
-          "args": [
-            1,
-          ],
-          "key": "method1",
-          "type": "call",
-        },
-      ],
-      "method2": [
-        {
-          "key": "method2",
-          "type": "get",
-        },
-        {
-          "args": [
-            {
-              "b": [],
-            },
-          ],
-          "key": "method2",
-          "type": "call",
-        },
-      ],
-    }
-  `,
-  );
+  expect(history.getAll()).toMatchInlineSnapshot(`
+    [
+      {
+        "key": "method1",
+        "type": "get",
+      },
+      {
+        "args": [
+          1,
+        ],
+        "key": "method1",
+        "type": "call",
+      },
+      {
+        "key": "method2",
+        "type": "get",
+      },
+      {
+        "args": [
+          {
+            "b": [],
+          },
+        ],
+        "key": "method2",
+        "type": "call",
+      },
+    ]
+  `);
 });

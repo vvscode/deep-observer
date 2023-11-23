@@ -16,6 +16,7 @@ describe('createSpy', () => {
       prop2: {
         nestedProp1: 'hello',
         nestedProp2: [1, 2, 3],
+        nestedMethod: (a: number, b: number) => a * b,
       },
       method: (a: number, b: number) => a + b,
     };
@@ -31,34 +32,30 @@ describe('createSpy', () => {
 
     // Call methods
     spyObject.method(2, 3);
+    spyObject.prop2.nestedMethod(2, 3);
 
     // Check if history.put is called with the correct arguments
-    expect(spyHistoryMock.put).toHaveBeenCalledTimes(6);
     expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
       [
         [
-          "prop1",
           {
             "key": "prop1",
             "type": "get",
           },
         ],
         [
-          "prop2",
           {
             "key": "prop2",
             "type": "get",
           },
         ],
         [
-          "prop2.nestedProp1",
           {
-            "key": "nestedProp1",
+            "key": "prop2.nestedProp1",
             "type": "get",
           },
         ],
         [
-          "prop1",
           {
             "key": "prop1",
             "type": "set",
@@ -66,20 +63,40 @@ describe('createSpy', () => {
           },
         ],
         [
-          "method",
           {
             "key": "method",
             "type": "get",
           },
         ],
         [
-          "method",
           {
             "args": [
               2,
               3,
             ],
             "key": "method",
+            "type": "call",
+          },
+        ],
+        [
+          {
+            "key": "prop2",
+            "type": "get",
+          },
+        ],
+        [
+          {
+            "key": "prop2.nestedMethod",
+            "type": "get",
+          },
+        ],
+        [
+          {
+            "args": [
+              2,
+              3,
+            ],
+            "key": "prop2.nestedMethod",
             "type": "call",
           },
         ],
@@ -117,46 +134,40 @@ describe('createSpy', () => {
     expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
       [
         [
-          "a",
           {
             "key": "a",
             "type": "get",
           },
         ],
         [
-          "a.x",
           {
-            "key": "x",
+            "key": "a.x",
             "type": "set",
             "value": 1,
           },
         ],
         [
-          "a",
           {
             "key": "a",
             "type": "get",
           },
         ],
         [
-          "a.x",
           {
-            "key": "x",
+            "key": "a.x",
             "type": "set",
             "value": 2,
           },
         ],
         [
-          "b",
           {
             "key": "b",
             "type": "get",
           },
         ],
         [
-          "b.x",
           {
-            "key": "x",
+            "key": "b.x",
             "type": "get",
           },
         ],
@@ -207,7 +218,6 @@ describe('createSpy', () => {
       expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
         [
           [
-            "property",
             {
               "key": "property",
               "type": "get",
@@ -225,7 +235,6 @@ describe('createSpy', () => {
       expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
         [
           [
-            "property",
             {
               "key": "property",
               "type": "set",
@@ -254,14 +263,12 @@ describe('createSpy', () => {
       expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
         [
           [
-            "method",
             {
               "key": "method",
               "type": "get",
             },
           ],
           [
-            "method",
             {
               "args": [
                 {

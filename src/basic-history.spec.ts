@@ -9,43 +9,80 @@ describe('BasicHistory', () => {
   });
 
   it('put method adds history item', () => {
-    const key = 'exampleKey';
     const item: HistoryItem = { type: 'get', key: 'example.key' };
 
-    basicHistory.put(key, item);
+    basicHistory.put(item);
 
     const result = basicHistory.getAll();
-    expect(result[key]).toHaveLength(1);
-    expect(result[key][0]).toEqual(item);
+    expect(result).toMatchInlineSnapshot(`
+      [
+        {
+          "key": "example.key",
+          "type": "get",
+        },
+      ]
+    `);
   });
 
   it('put method adds multiple history items for the same key', () => {
-    const key = 'exampleKey';
     const item1: HistoryItem = { type: 'get', key: 'example.key1' };
     const item2: HistoryItem = { type: 'set', key: 'example.key2', value: 'someValue' };
 
-    basicHistory.put(key, item1);
-    basicHistory.put(key, item2);
+    basicHistory.put(item1);
+    basicHistory.put(item2);
 
     const result = basicHistory.getAll();
-    expect(result[key]).toHaveLength(2);
-    expect(result[key][0]).toEqual(item1);
-    expect(result[key][1]).toEqual(item2);
+    expect(result).toMatchInlineSnapshot(`
+      [
+        {
+          "key": "example.key1",
+          "type": "get",
+        },
+        {
+          "key": "example.key2",
+          "type": "set",
+          "value": "someValue",
+        },
+      ]
+    `);
   });
 
   it('getAll method returns a copy of the history', () => {
-    const key = 'exampleKey';
     const item: HistoryItem = { type: 'call', key: 'example.method', args: [1, 2, 3] };
 
-    basicHistory.put(key, item);
+    basicHistory.put(item);
 
     const result = basicHistory.getAll();
-    expect(result[key]).toHaveLength(1);
+    expect(result).toMatchInlineSnapshot(`
+      [
+        {
+          "args": [
+            1,
+            2,
+            3,
+          ],
+          "key": "example.method",
+          "type": "call",
+        },
+      ]
+    `);
 
     // Modify the result, original history should not be affected
-    result[key] = [];
+    result[0] = {} as HistoryItem;
 
     const updatedResult = basicHistory.getAll();
-    expect(updatedResult[key]).toHaveLength(1);
+    expect(updatedResult).toMatchInlineSnapshot(`
+      [
+        {
+          "args": [
+            1,
+            2,
+            3,
+          ],
+          "key": "example.method",
+          "type": "call",
+        },
+      ]
+    `);
   });
 });

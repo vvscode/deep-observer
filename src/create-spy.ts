@@ -31,7 +31,7 @@ export function createSpy<T>(obj: T, history: History): T {
           err = error;
         }
 
-        history.put(path.concat(String(key)).join('.'), { type: 'get', key });
+        history.put({ type: 'get', key: path.concat(String(key)).join('.') });
 
         if (err) {
           throw err;
@@ -40,12 +40,12 @@ export function createSpy<T>(obj: T, history: History): T {
         return shouldProxy(value) ? createProxy(value, path.concat(String(key))) : value;
       },
       set: (target, key, value, receiver) => {
-        history.put(path.concat(String(key)).join('.'), { type: 'set', key, value });
+        history.put({ type: 'set', key: path.concat(String(key)).join('.'), value });
         return Reflect.set(target, key, value, receiver);
       },
       // eslint-disable-next-line @typescript-eslint/ban-types
       apply: (target: Function, thisArg, args) => {
-        history.put(path.join('.'), { type: 'call', key: path.join('.'), args });
+        history.put({ type: 'call', key: path.join('.'), args });
         return Reflect.apply(target, thisArg, args);
       },
     });

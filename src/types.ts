@@ -6,6 +6,6 @@ export type HistoryItem = {
 };
 
 export interface History {
-  put(key: string, item: HistoryItem): void;
-  getAll(): Record<string, HistoryItem[]>;
+  put(item: HistoryItem): void;
+  getAll(): HistoryItem[];
 }

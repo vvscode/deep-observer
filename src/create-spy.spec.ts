@@ -1,6 +1,15 @@
 import { createSpy } from './create-spy';
+import { History } from './types';
 
 describe('createSpy', () => {
+  let spyHistoryMock: jest.Mocked<History>;
+
+  beforeEach(() => {
+    spyHistoryMock = {
+      put: jest.fn(),
+      getAll: jest.fn(),
+    };
+  });
   it('should create a spy object with history', () => {
     const originalObject = {
       prop1: 42,
@@ -9,11 +18,6 @@ describe('createSpy', () => {
         nestedProp2: [1, 2, 3],
       },
       method: (a: number, b: number) => a + b,
-    };
-
-    const spyHistoryMock = {
-      put: jest.fn(),
-      getAll: jest.fn(),
     };
 
     const spyObject = createSpy(originalObject, spyHistoryMock);
@@ -52,11 +56,6 @@ describe('createSpy', () => {
       prop1: 42,
     };
 
-    const spyHistoryMock = {
-      put: jest.fn(),
-      getAll: jest.fn(),
-    };
-
     const spyObject1 = createSpy(originalObject, spyHistoryMock);
     const spyObject2 = createSpy(originalObject, spyHistoryMock);
 
@@ -73,11 +72,6 @@ describe('createSpy', () => {
       b: basicObject,
     };
 
-    const spyHistoryMock = {
-      put: jest.fn(),
-      getAll: jest.fn(),
-    };
-
     const spyObject = createSpy(complexObject, spyHistoryMock);
     spyObject.a.x = 1;
     spyObject.a.x = 2;
@@ -92,5 +86,78 @@ describe('createSpy', () => {
       ['b', { key: 'b', type: 'get' }],
       ['b.x', { key: 'x', type: 'get' }],
     ]);
+  });
+
+  describe('with throwing object', () => {
+    let throwingObject: any;
+    beforeEach(() => {
+      throwingObject = createSpy(
+        new Proxy(
+          {
+            method: () => {
+              throw new Error("Object's method is not callable");
+            },
+          },
+          {
+            get: function (target, key) {
+              throw new Error(`Property '${String(key)}' does not exist on the object`);
+            },
+            set: function (target, key, value) {
+              throw new Error(`Cannot set property '${String(key)}' on the object`);
+            },
+            apply: function (target, thisArg, args) {
+              throw new Error(`Object is not callable`);
+            },
+          }
+        ),
+        spyHistoryMock
+      );
+    });
+    it('should log property access to history', () => {
+      expect(() => {
+        throwingObject.property;
+      }).toThrow();
+
+      expect(spyHistoryMock.put.mock.calls).toEqual([
+        ['property', { key: 'property', type: 'get' }],
+      ]);
+    });
+
+    it('should log property set to history', () => {
+      expect(() => {
+        throwingObject.property = 42;
+      }).toThrow();
+
+      expect(spyHistoryMock.put.mock.calls).toEqual([
+        ['property', { key: 'property', type: 'set', value: 42 }],
+      ]);
+    });
+
+    it('should log method call to history', () => {
+      throwingObject = createSpy(
+        {
+          method: () => {
+            throw new Error("Object's method is not callable");
+          },
+        },
+        spyHistoryMock
+      );
+
+      expect(() => {
+        throwingObject.method({ x: 1 });
+      }).toThrow();
+
+      expect(spyHistoryMock.put.mock.calls).toEqual([
+        ['method', { key: 'method', type: 'get' }],
+        [
+          'method',
+          {
+            args: [{ x: 1 }],
+            key: 'method',
+            type: 'call',
+          },
+        ],
+      ]);
+    });
   });
 });

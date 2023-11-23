@@ -17,19 +17,20 @@ export function createSpy<T>(obj: T, history: History): T & { history: History }
 
     const proxy = new Proxy(target, {
       get: (target, key, receiver) => {
-        const value = Reflect.get(target, key, receiver);
-
-        // if (isFunction(value)) {
-        //   // If the property is a function, return a wrapped function
-        //   const wrappedFunction = function (this: any, ...args: any[]) {
-        //     // history.put(path.join('.'), { type: 'call', key: path.join('.'), args });
-        //     return Reflect.apply(value, this, args);
-        //   };
-
-        //   return createProxy(wrappedFunction, path.concat(String(key)));
-        // }
+        let err;
+        let value;
+        try {
+          value = Reflect.get(target, key, receiver);
+        } catch (error) {
+          err = error;
+        }
 
         history.put(path.concat(String(key)).join('.'), { type: 'get', key });
+
+        if (err) {
+          throw err;
+        }
+
         return shouldProxy(value) ? createProxy(value, path.concat(String(key))) : value;
       },
       set: (target, key, value, receiver) => {

@@ -1,8 +1,8 @@
 export type HistoryItem = {
   type: 'get' | 'set' | 'call';
   key: string | symbol;
-  value?: any;
-  args?: any[];
+  value?: unknown;
+  args?: unknown[];
 };
 
 export interface History {

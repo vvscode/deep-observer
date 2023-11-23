@@ -88,8 +88,17 @@ describe('createSpy', () => {
     ]);
   });
 
+  it('throws an error on calling with non-object', () => {
+    expect(() => {
+      createSpy(2, spyHistoryMock);
+    }).toThrow();
+  });
+
   describe('with throwing object', () => {
-    let throwingObject: any;
+    let throwingObject: {
+      method: (data: unknown) => void;
+      property: number;
+    };
     beforeEach(() => {
       throwingObject = createSpy(
         new Proxy(
@@ -97,20 +106,21 @@ describe('createSpy', () => {
             method: () => {
               throw new Error("Object's method is not callable");
             },
+            property: 21,
           },
           {
-            get: function (target, key) {
+            get: function (_, key) {
               throw new Error(`Property '${String(key)}' does not exist on the object`);
             },
-            set: function (target, key, value) {
+            set: function (_, key) {
               throw new Error(`Cannot set property '${String(key)}' on the object`);
             },
-            apply: function (target, thisArg, args) {
+            apply: function () {
               throw new Error(`Object is not callable`);
             },
-          }
+          },
         ),
-        spyHistoryMock
+        spyHistoryMock,
       );
     });
     it('should log property access to history', () => {
@@ -139,8 +149,9 @@ describe('createSpy', () => {
           method: () => {
             throw new Error("Object's method is not callable");
           },
+          property: 21,
         },
-        spyHistoryMock
+        spyHistoryMock,
       );
 
       expect(() => {

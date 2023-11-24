@@ -20,10 +20,11 @@ Object Chronicler is your ally in navigating the intricacies of JavaScript objec
 
 > Explore new possibilities with Object Chronicler today!
 
-## Installation
+### Installation
 
-````bash
+```bash
 npm install object-chronicler
+```
 
 ## Usage
 

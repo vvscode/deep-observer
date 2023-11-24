@@ -1,16 +1,13 @@
 import type { History, HistoryItem } from './types';
 
 export class BasicHistory implements History {
-  private history: Record<string, HistoryItem[]> = {};
+  private history: HistoryItem[] = [];
 
-  put(key: string, item: HistoryItem): void {
-    if (!this.history[key]) {
-      this.history[key] = [];
-    }
-    this.history[key].push(item);
+  put(item: HistoryItem): void {
+    this.history.push(item);
   }
 
-  getAll(): Record<string, HistoryItem[]> {
-    return { ...this.history };
+  getAll(): HistoryItem[] {
+    return structuredClone(this.history);
   }
 }

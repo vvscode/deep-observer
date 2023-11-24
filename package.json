@@ -1,20 +1,21 @@
 {
-  "name": "deep-observer",
+  "name": "object-chronicler",
   "version": "0.0.1",
-  "description": "Object usage observer",
+  "description": "Object usage chronicler",
   "keywords": [
     "spy",
-    "observer"
+    "observer",
+    "chronicler"
   ],
-  "main": "lib/deep-observer.js",
-  "types": "lib/deep-observer.d.ts",
+  "main": "lib/object-chronicler.js",
+  "types": "lib/object-chronicler.d.ts",
   "files": [
     "lib"
   ],
   "author": "vvscode <v.vanchuk@tut.by>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vvscode/deep-observer"
+    "url": "https://github.com/vvscode/object-chronicler"
   },
   "license": "MIT",
   "engines": {
@@ -24,7 +25,7 @@
     "lint": "eslint --fix 'src/**/*.ts'",
     "prebuild": "rimraf lib",
     "build": "tsc --project tsconfig.build.json",
-    "build:docs": "typedoc --out docs src/deep-observer.ts",
+    "build:docs": "typedoc --out docs src/object-chronicler.ts",
     "test": "jest --config jest.config.ts --coverage",
     "test:ci": "npm run lint && npm run test -- --no-cache"
   },

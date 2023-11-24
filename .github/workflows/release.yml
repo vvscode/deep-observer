@@ -1,5 +1,5 @@
 # https://github.com/actions/starter-workflows/blob/main/pages/static.yml
-name: build
+name: release
 on:
   # Runs on pushes targeting the default branch
   push:

@@ -85,4 +85,40 @@ describe('BasicHistory', () => {
       ]
     `);
   });
+
+  describe('has', () => {
+    it('should return true if the history contains a matching item', () => {
+      const history = new BasicHistory();
+      const item1 = { type: 'get', key: 'a' } as const;
+      history.put(item1);
+
+      expect(history.has({ type: 'get' })).toBe(true);
+    });
+
+    it('should return false if the history does not contain a matching item', () => {
+      const history = new BasicHistory();
+      const item1 = { type: 'get', key: 'a' } as const;
+      history.put(item1);
+
+      expect(history.has({ type: 'set' })).toBe(false);
+    });
+
+    it('should match items with deep partial matching', () => {
+      const history = new BasicHistory();
+      const item1 = { type: 'call', key: 'b', args: [3] } as const;
+      history.put(item1);
+
+      expect(history.has({ type: 'call', args: [3] })).toBe(true);
+      expect(history.has({ type: 'call', args: [4] })).toBe(false);
+    });
+
+    it('should match items with deep partial matching for nested objects', () => {
+      const history = new BasicHistory();
+      const item1 = { type: 'call', key: 'b', args: [{ nested: 42, other: 'value' }] } as const;
+      history.put(item1);
+
+      expect(history.has({ type: 'call', args: [{ nested: 42 }] })).toBe(true);
+      expect(history.has({ type: 'call', args: [{ nested: 43 }] })).toBe(false);
+    });
+  });
 });

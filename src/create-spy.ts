@@ -1,7 +1,4 @@
-import type { History } from './types';
-
-const isObject = (value: unknown): value is object => typeof value === 'object' && value !== null;
-const isFunction = (value: unknown) => typeof value === 'function';
+import { type History, isFunction, isObject } from './types';
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- it's require by Reflect.apply
 const shouldProxy = (value: unknown): value is object | Function =>

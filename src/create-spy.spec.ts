@@ -8,6 +8,7 @@ describe('createSpy', () => {
     spyHistoryMock = {
       put: jest.fn(),
       getAll: jest.fn(),
+      has: jest.fn(),
     };
   });
   it('should create a spy object with history', () => {
@@ -281,6 +282,42 @@ describe('createSpy', () => {
           ],
         ]
       `);
+    });
+  });
+
+  describe('with already proxied object', () => {
+    it('should log property access to history', () => {
+      const originalObject = { property: 42 };
+      const proxiedObject = new Proxy(originalObject, {});
+
+      const spyObject = createSpy(proxiedObject, spyHistoryMock);
+
+      spyObject.property;
+
+      expect(spyHistoryMock.getAll()).toMatchInlineSnapshot(`undefined`);
+    });
+
+    it('should log property set to history', () => {
+      const originalObject = { property: 42 };
+      const proxiedObject = new Proxy(originalObject, {});
+
+      const spyObject = createSpy(proxiedObject, spyHistoryMock);
+
+      spyObject.property = 100;
+
+      expect(spyHistoryMock.getAll()).toMatchInlineSnapshot(`undefined`);
+    });
+
+    it('should log method call to history', () => {
+      const originalObject = { method: () => 42 };
+      const proxiedObject = new Proxy(originalObject, {});
+
+      const spyObject = createSpy(proxiedObject, spyHistoryMock);
+
+      // Call a method
+      spyObject.method();
+
+      expect(spyHistoryMock.getAll()).toMatchInlineSnapshot(`undefined`);
     });
   });
 });

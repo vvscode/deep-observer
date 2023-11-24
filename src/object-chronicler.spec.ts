@@ -142,4 +142,46 @@ describe('createSpy and BasicHistory Integration Tests', () => {
       ]
     `);
   });
+
+  it('should correctly check the existence of history items using the "has" method', () => {
+    const obj = {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      method1: (x: unknown) => 'result1',
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      method2: (y: unknown) => 'result2',
+      method3: () => 'result3',
+      user: {
+        getName: () => void 0,
+        getAddress: () => void 0,
+      },
+    };
+
+    const history = new BasicHistory();
+    const spiedObj = createSpy(obj, history);
+
+    // Invoke some methods
+    spiedObj.method1(1);
+    spiedObj.method2({ b: [] });
+
+    // Check if the history contains certain items
+    expect(history.has({ type: 'get', key: 'method1' })).toBe(true);
+    expect(history.has({ type: 'call', key: 'method1', args: [1] })).toBe(true);
+    expect(history.has({ type: 'get', key: 'method2' })).toBe(true);
+    expect(history.has({ type: 'call', key: 'method2', args: [{ b: [] }] })).toBe(true);
+    expect(history.has({ type: 'get', key: 'method3' })).toBe(false); // This method wasn't called
+
+    // Additional checks for nested properties
+    expect(history.has({ type: 'get', key: 'user.getName' })).toBe(false); // This method wasn't called
+    expect(history.has({ type: 'get', key: 'user.getAddress' })).toBe(false); // This method wasn't called
+
+    // Invoke more methods
+    spiedObj.user.getName();
+    spiedObj.user.getAddress();
+
+    // Check if the history contains certain items after invoking additional methods
+    expect(history.has({ type: 'get', key: 'user.getName' })).toBe(true);
+    expect(history.has({ type: 'call', key: 'user.getName', args: [] })).toBe(true);
+    expect(history.has({ type: 'get', key: 'user.getAddress' })).toBe(true);
+    expect(history.has({ type: 'call', key: 'user.getAddress', args: [] })).toBe(true);
+  });
 });

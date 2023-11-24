@@ -1,4 +1,4 @@
-import { BasicHistory, createSpy } from './deep-observer';
+import { BasicHistory, createSpy } from './object-chronicler';
 
 describe('createSpy and BasicHistory Integration Tests', () => {
   it('should create a spy and record history for different methods', () => {

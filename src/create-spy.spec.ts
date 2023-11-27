@@ -568,4 +568,48 @@ describe('createSpy', () => {
       `);
     });
   });
+
+  describe('spying behavior with detached property access', () => {
+    it('should record history for nested property access on detached interaction', () => {
+      const originalObject = { a: { b: { c: { d: 1 } } } };
+      const spiedObject = createSpy(originalObject, spyHistoryMock);
+
+      // Access properties
+      const a = spiedObject.a;
+      const b = a.b;
+      const c = b.c;
+      const d = c.d;
+      d; // just to cover unused const creation
+
+      // Check if history.put is called with the correct arguments
+      expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            {
+              "key": "a",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "a.b",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "a.b.c",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "a.b.c.d",
+              "type": "get",
+            },
+          ],
+        ]
+      `);
+    });
+  });
 });

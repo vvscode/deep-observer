@@ -320,4 +320,252 @@ describe('createSpy', () => {
       expect(spyHistoryMock.getAll()).toMatchInlineSnapshot(`undefined`);
     });
   });
+
+  describe('createSpy with dynamically added nested structures', () => {
+    it('should make dynamically added nested object properties observable', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalObject: any = {
+        a: 1,
+        b: { x: [1] },
+      };
+
+      const spyObject = createSpy(originalObject, spyHistoryMock);
+
+      // Access properties of the nested object
+      spyObject.b.x;
+
+      // Dynamically add a nested object
+      spyObject.y = { d: 2, e: { k: 1 } };
+
+      // Access properties of the dynamically added nested object
+      spyObject.y.d;
+
+      // Check if history.put is called with the correct arguments for nested object properties
+      expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            {
+              "key": "b",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "b.x",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "y",
+              "type": "set",
+              "value": {
+                "d": 2,
+                "e": {
+                  "k": 1,
+                },
+              },
+            },
+          ],
+          [
+            {
+              "key": "y",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "y.d",
+              "type": "get",
+            },
+          ],
+        ]
+      `);
+    });
+
+    it('should make dynamically added nested array elements observable', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalObject: any = {
+        a: 1,
+        b: { x: [1] },
+      };
+
+      const spyObject = createSpy(originalObject, spyHistoryMock);
+
+      // Access elements of the nested array
+      spyObject.b.x.map((el: number) => el + 1);
+
+      // Dynamically add a nested array
+      spyObject.y = [2, 3, 4];
+
+      // Access elements of the dynamically added nested array
+      spyObject.y[1];
+
+      // Check if history.put is called with the correct arguments for nested array elements
+      expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            {
+              "key": "b",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "b.x",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "b.x.map",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "args": [
+                [Function],
+              ],
+              "key": "b.x.map",
+              "type": "call",
+            },
+          ],
+          [
+            {
+              "key": "b.x.length",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "b.x.constructor",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "b.x.0",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "y",
+              "type": "set",
+              "value": [
+                2,
+                3,
+                4,
+              ],
+            },
+          ],
+          [
+            {
+              "key": "y",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "y.1",
+              "type": "get",
+            },
+          ],
+        ]
+      `);
+    });
+
+    it('should make dynamically added nested function calls observable', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalObject: any = {
+        a: 1,
+        b: { x: [1] },
+      };
+
+      const spyObject = createSpy(originalObject, spyHistoryMock);
+
+      // Call the nested function
+      spyObject.b.x.map((num: number) => num * 2);
+
+      // Dynamically add a nested function
+      spyObject.y = (num: number) => num + 1;
+
+      // Call the dynamically added nested function
+      spyObject.y(5);
+
+      // Check if history.put is called with the correct arguments for nested function calls
+      expect(spyHistoryMock.put.mock.calls).toMatchInlineSnapshot(`
+        [
+          [
+            {
+              "key": "b",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "b.x",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "b.x.map",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "args": [
+                [Function],
+              ],
+              "key": "b.x.map",
+              "type": "call",
+            },
+          ],
+          [
+            {
+              "key": "b.x.length",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "b.x.constructor",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "b.x.0",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "key": "y",
+              "type": "set",
+              "value": [Function],
+            },
+          ],
+          [
+            {
+              "key": "y",
+              "type": "get",
+            },
+          ],
+          [
+            {
+              "args": [
+                5,
+              ],
+              "key": "y",
+              "type": "call",
+            },
+          ],
+        ]
+      `);
+    });
+  });
 });

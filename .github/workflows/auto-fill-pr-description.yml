@@ -3,7 +3,9 @@ name: Autofill PR description
 on: pull_request
 
 jobs:
-  openai-pr-description:
+  pr-description:
+    permissions:
+      pull-requests: write
     runs-on: ubuntu-22.04
 
     steps:
@@ -20,3 +22,4 @@ jobs:
         with:
           body: ${{ steps.pr-description.outputs.pull_request_description }}
           token: ${{ secrets.GITHUB_TOKEN }}
+

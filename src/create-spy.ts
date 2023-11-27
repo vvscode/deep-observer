@@ -1,8 +1,11 @@
 import { type History, isFunction, isObject } from './types';
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- it's require by Reflect.apply
-const shouldProxy = (value: unknown): value is object | Function =>
+const isValidSpyTarget = (value: unknown): value is object | Function =>
   isObject(value) || isFunction(value);
+
+const shouldProxy = (value: unknown, key: string | symbol) =>
+  isValidSpyTarget(value) && !(isFunction(value) && (key === 'prototype' || key === 'constructor'));
 
 export function createSpy<T>(obj: T, history: History): T {
   const proxyCache = new Map<string, unknown>();
@@ -14,13 +17,14 @@ export function createSpy<T>(obj: T, history: History): T {
       return proxyCache.get(cacheKey);
     }
 
-    if (!shouldProxy(target)) {
+    if (!isValidSpyTarget(target)) {
       throw new TypeError('target should be an object');
     }
 
     const proxy = new Proxy(target, {
       get: (target, key, receiver) => {
-        let err;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let err: any;
         let value;
         try {
           value = Reflect.get(target, key, receiver);
@@ -28,13 +32,27 @@ export function createSpy<T>(obj: T, history: History): T {
           err = error;
         }
 
+        /**
+        // Potential direction to research in case shouldProxy() still gives fail cases
+        // Check if the property is non-writable and non-configurable
+        // https://stackoverflow.com/a/75150991/3400830
+        if (
+          err &&
+          (err.message.includes("property 'prototype' is a read-only and non-configurable") ||
+            err.message.includes("Cannot perform 'get' on a proxy that has been revoked"))
+        ) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return (target as any)[key]; // Return the actual value of the property
+        }
+        */
+
         history.put({ type: 'get', key: path.concat(String(key)).join('.') });
 
         if (err) {
           throw err;
         }
 
-        return shouldProxy(value) ? createProxy(value, path.concat(String(key))) : value;
+        return shouldProxy(value, key) ? createProxy(value, path.concat(String(key))) : value;
       },
       set: (target, key, value, receiver) => {
         history.put({ type: 'set', key: path.concat(String(key)).join('.'), value });

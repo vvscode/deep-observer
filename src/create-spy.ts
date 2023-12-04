@@ -1,4 +1,4 @@
-import { type History, isFunction, isObject } from './types';
+import { type History, isFunction, isHistoryInstance, isObject } from './types';
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- it's require by Reflect.apply
 const isValidSpyTarget = (value: unknown): value is object | Function =>
@@ -8,6 +8,10 @@ const shouldProxy = (value: unknown, key: string | symbol) =>
   isValidSpyTarget(value) && !(isFunction(value) && (key === 'prototype' || key === 'constructor'));
 
 export function createSpy<T>(obj: T, history: History): T {
+  if (!isHistoryInstance(history)) {
+    throw new TypeError('history should be an implementation of History');
+  }
+
   const proxyCache = new Map<string, unknown>();
 
   function createProxy(target: unknown, path: string[] = []): unknown {

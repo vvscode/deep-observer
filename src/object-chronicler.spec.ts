@@ -184,4 +184,10 @@ describe('createSpy and BasicHistory Integration Tests', () => {
     expect(history.has({ type: 'get', key: 'user.getAddress' })).toBe(true);
     expect(history.has({ type: 'call', key: 'user.getAddress', args: [] })).toBe(true);
   });
+
+  it('should throw type error if history is not an instance of History', () => {
+    expect(() => {
+      createSpy({}, undefined as unknown as BasicHistory);
+    }).toThrow('history should be an implementation of History');
+  });
 });

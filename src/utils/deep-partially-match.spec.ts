@@ -19,9 +19,31 @@ describe('deepPartiallyMatch with deepPartial', () => {
     expect(deepPartiallyMatch(item1, item2)).toBe(true);
   });
 
-  it('should return true for HistoryItems with partial match and nested objects', () => {
+  it('should return true for HistoryItems with partial match and partial match nested objects', () => {
     const item1: HistoryItem = { type: 'call', key: 'b', args: [{ nested: 42, other: 'value' }] };
     const item2: DeepPartial<HistoryItem> = { type: 'call', key: 'b', args: [{ nested: 42 }] };
+    expect(deepPartiallyMatch(item1, item2)).toBe(true);
+  });
+
+  it('should return true for HistoryItems with partial match and partial nesting (no objects in the list)', () => {
+    const item1: HistoryItem = { type: 'call', key: 'b', args: [{ nested: 42, other: 'value' }] };
+    const item2: DeepPartial<HistoryItem> = { type: 'call', key: 'b', args: [] };
+    expect(deepPartiallyMatch(item1, item2)).toBe(true);
+  });
+
+  it('should return false for HistoryItems with partial match and partial micmatch on nesting', () => {
+    const item1: HistoryItem = { type: 'call', key: 'b', args: [{ nested: 42, other: 'value' }] };
+    const item2: DeepPartial<HistoryItem> = {
+      type: 'call',
+      key: 'b',
+      args: [{ value: 42, other: 'other value' }],
+    };
+    expect(deepPartiallyMatch(item1, item2)).toBe(false);
+  });
+
+  it('should return true for HistoryItems with partial match and partial nesting (no list)', () => {
+    const item1: HistoryItem = { type: 'call', key: 'b', args: [{ nested: 42, other: 'value' }] };
+    const item2: DeepPartial<HistoryItem> = { type: 'call', key: 'b' };
     expect(deepPartiallyMatch(item1, item2)).toBe(true);
   });
 

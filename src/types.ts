@@ -29,6 +29,8 @@ export const isHistoryInstance = (obj: unknown): obj is History => {
     'getAll' in obj &&
     typeof obj.getAll === 'function' &&
     'has' in obj &&
-    typeof obj.has === 'function'
+    typeof obj.has === 'function' &&
+    'reset' in obj &&
+    typeof obj.reset === 'function'
   );
 };

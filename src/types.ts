@@ -9,6 +9,7 @@ export interface History {
   put(item: HistoryItem): void;
   getAll(): HistoryItem[];
   has(match: DeepPartial<HistoryItem>): boolean;
+  reset(): Promise<void>;
 }
 
 export type DeepPartial<T> = {

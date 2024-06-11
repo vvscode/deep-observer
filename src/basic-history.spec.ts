@@ -121,4 +121,16 @@ describe('BasicHistory', () => {
       expect(history.has({ type: 'call', args: [{ nested: 43 }] })).toBe(false);
     });
   });
+
+  describe('reset', () => {
+    it('should reset the history', async () => {
+      const history = new BasicHistory();
+      const item1 = { type: 'get', key: 'a' } as const;
+      history.put(item1);
+
+      expect(history.has({ type: 'get' })).toBe(true);
+      await history.reset();
+      expect(history.has({ type: 'get' })).toBe(false);
+    });
+  });
 });

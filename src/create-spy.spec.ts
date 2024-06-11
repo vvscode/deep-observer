@@ -9,6 +9,7 @@ describe('createSpy', () => {
       put: jest.fn(),
       getAll: jest.fn(),
       has: jest.fn(),
+      reset: jest.fn(),
     };
   });
   it('should create a spy object with history', () => {

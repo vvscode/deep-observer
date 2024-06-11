@@ -9,6 +9,7 @@ export interface History {
   put(item: HistoryItem): void;
   getAll(): HistoryItem[];
   has(match: DeepPartial<HistoryItem>): boolean;
+  reset(): Promise<void>;
 }
 
 export type DeepPartial<T> = {
@@ -29,6 +30,8 @@ export const isHistoryInstance = (obj: unknown): obj is History => {
     'getAll' in obj &&
     typeof obj.getAll === 'function' &&
     'has' in obj &&
-    typeof obj.has === 'function'
+    typeof obj.has === 'function' &&
+    'reset' in obj &&
+    typeof obj.reset === 'function'
   );
 };

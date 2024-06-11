@@ -12,6 +12,10 @@ export class BasicHistory implements History {
     return structuredClone(this.history);
   }
 
+  async reset(): Promise<void> {
+    this.history = [];
+  }
+
   has(match: DeepPartial<HistoryItem>): boolean {
     for (const item of this.history) {
       if (deepPartiallyMatch(item, match)) {

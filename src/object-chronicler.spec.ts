@@ -190,4 +190,23 @@ describe('createSpy and BasicHistory Integration Tests', () => {
       createSpy({}, undefined as unknown as BasicHistory);
     }).toThrow('history should be an implementation of History');
   });
+
+  it('should properly handle proxies in history', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const obj: any = {
+      address: { city: 'New York', country: 'USA' },
+      getAddress: function () {
+        return this.address;
+      },
+      setAddress: function (address: (typeof obj)['address']) {
+        this.address = address;
+      },
+    };
+
+    const history = new BasicHistory();
+    const spiedObj = createSpy(obj, history);
+
+    spiedObj.setAddress(spiedObj.getAddress());
+    expect(history.getAll().length).toBe(6);
+  });
 });

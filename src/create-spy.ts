@@ -1,4 +1,6 @@
+import { TARGET_SYMBOL } from './proxy-target';
 import { type History, isFunction, isHistoryInstance, isObject } from './types';
+import { customStructuredClone } from './utils/custom-structured-clone';
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- it's require by Reflect.apply
 const isValidSpyTarget = (value: unknown): value is object | Function =>
@@ -30,6 +32,11 @@ export function createSpy<T>(obj: T, history: History): T {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let err: any;
         let value;
+
+        if (key === TARGET_SYMBOL) {
+          return target;
+        }
+
         try {
           value = Reflect.get(target, key, receiver);
         } catch (error) {
@@ -59,12 +66,20 @@ export function createSpy<T>(obj: T, history: History): T {
         return shouldProxy(value, key) ? createProxy(value, path.concat(String(key))) : value;
       },
       set: (target, key, value, receiver) => {
-        history.put({ type: 'set', key: path.concat(String(key)).join('.'), value });
+        history.put({
+          type: 'set',
+          key: path.concat(String(key)).join('.'),
+          value: customStructuredClone(value),
+        });
         return Reflect.set(target, key, value, receiver);
       },
       // eslint-disable-next-line @typescript-eslint/ban-types
       apply: (target: Function, thisArg, args) => {
-        history.put({ type: 'call', key: path.join('.'), args });
+        history.put({
+          type: 'call',
+          key: path.join('.'),
+          args: customStructuredClone(args),
+        });
         return Reflect.apply(target, thisArg, args);
       },
     });

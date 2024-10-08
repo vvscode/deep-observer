@@ -1,4 +1,5 @@
 import type { DeepPartial, History, HistoryItem } from './types';
+import { customStructuredClone } from './utils/custom-structured-clone';
 import { deepPartiallyMatch } from './utils/deep-partially-match';
 
 export class BasicHistory implements History {
@@ -9,7 +10,7 @@ export class BasicHistory implements History {
   }
 
   getAll(): HistoryItem[] {
-    return structuredClone(this.history);
+    return customStructuredClone(this.history);
   }
 
   async reset(): Promise<void> {

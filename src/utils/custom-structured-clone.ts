@@ -7,6 +7,11 @@ export function customStructuredClone<T>(el: T): T {
   if (Array.isArray(el)) {
     return el.map(customStructuredClone) as T;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return structuredClone(((el as any)[TARGET_SYMBOL] ?? el) as T);
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return structuredClone(((el as any)[TARGET_SYMBOL] ?? el) as T);
+  } catch (e) {
+    console.error(e, `Error on cloning`, el, 'fallback is returned');
+    return JSON.parse(JSON.stringify(el)) as T;
+  }
 }

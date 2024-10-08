@@ -1,4 +1,5 @@
 import { BasicHistory } from './basic-history'; // Замените на путь к вашему файлу BasicHistory
+import { createSpy } from './create-spy';
 import type { HistoryItem } from './types';
 
 describe('BasicHistory', () => {
@@ -84,6 +85,18 @@ describe('BasicHistory', () => {
         },
       ]
     `);
+  });
+
+  it('getAll properly handles complex objects in history', () => {
+    const item1: HistoryItem = { type: 'call', key: 'example.method', args: [1, 2, 3] };
+    const item1Spy = createSpy(item1, basicHistory);
+
+    const item2: HistoryItem = { type: 'set', key: 'item2', args: [item1Spy] };
+
+    basicHistory.put(item1Spy);
+    basicHistory.put(item2);
+
+    expect(basicHistory.getAll()).toBeInstanceOf(Array);
   });
 
   describe('has', () => {
